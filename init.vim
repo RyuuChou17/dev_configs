@@ -45,12 +45,14 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/cmp-path'
     Plug 'L3MON4D3/LuaSnip'
-    Plug 'jose-elias-alvarez/null-ls.nvim'
+    Plug 'nvimtools/none-ls.nvim'
     Plug 'nvim-lua/plenary.nvim'
+    Plug 'github/copilot.vim'
 
 call plug#end()
 
 lua << EOF
+vim.g.mapleader = " "
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -61,7 +63,7 @@ require("nvim-tree").setup({
     sorter = "case_sensitive",
   },
   view = {
-    width = 30,
+    width = 50,
   },
   renderer = {
     group_empty = true,
@@ -71,6 +73,22 @@ require("nvim-tree").setup({
   },
 })
 require("lualine").setup()
+require('telescope').setup({
+  defaults = {
+    file_ignore_patterns = {
+      "node_modules",
+      "%.git/",
+      "target",           -- Rust
+      "%.o", "%.a",       -- 编译文件
+      "__pycache__",
+      "%.pyc",
+      "venv/",
+      "env/",
+      "%.jpg", "%.png", "%.webp",
+      "%.lock",
+    },
+  },
+})
 require("noice").setup()
 require("tint").setup({
   tint = -30,
@@ -97,7 +115,15 @@ require("mason-lspconfig").setup{
 }
 
 local lspconfig = require("lspconfig")
-lspconfig.pyright.setup {}
+lspconfig.pyright.setup({
+    settings = {
+        python = {
+            pythonPath = "/isaac-sim/python.sh"
+        }
+    }   
+})
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, {})
+
 
 local cmp = require("cmp")
 cmp.setup({
@@ -118,7 +144,6 @@ null_ls.setup({
   sources = {
     null_ls.builtins.formatting.black,
     null_ls.builtins.formatting.isort,
-    null_ls.builtins.diagnostics.flake8,  -- 可选
   },
 })
 
@@ -165,7 +190,7 @@ map('n', '<A-c>', '<Cmd>BufferClose<CR>', opts)
 --                 :BufferCloseBuffersLeft
 --                 :BufferCloseBuffersRight
 
-map('n', '<C-p>',   '<Cmd>BufferPick<CR>', opts)
+map('n', '<C-A-p>',   '<Cmd>BufferPick<CR>', opts)
 map('n', '<C-s-p>', '<Cmd>BufferPickDelete<CR>', opts)
 
 map('n', '<Space>bb', '<Cmd>BufferOrderByBufferNumber<CR>', opts)
@@ -173,7 +198,12 @@ map('n', '<Space>bn', '<Cmd>BufferOrderByName<CR>', opts)
 map('n', '<Space>bd', '<Cmd>BufferOrderByDirectory<CR>', opts)
 map('n', '<Space>bl', '<Cmd>BufferOrderByLanguage<CR>', opts)
 map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
+vim.keymap.set('n', '<C-p>', ":Telescope find_files<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-b>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
+
+
 
 EOF
+
 
 colorscheme tokyonight
