@@ -46,8 +46,14 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'hrsh7th/cmp-path'
     Plug 'L3MON4D3/LuaSnip'
     Plug 'nvimtools/none-ls.nvim'
-    Plug 'nvim-lua/plenary.nvim'
     Plug 'github/copilot.vim'
+    Plug 'ojroques/nvim-osc52'
+    Plug 'mfussenegger/nvim-dap'                         
+    Plug 'nvim-neotest/nvim-nio'
+    Plug 'rcarriga/nvim-dap-ui'                         
+    Plug 'nvim-telescope/telescope-dap.nvim'           
+    Plug 'theHamsta/nvim-dap-virtual-text'            
+    Plug 'mfussenegger/nvim-dap-python'
 
 call plug#end()
 
@@ -58,19 +64,33 @@ vim.g.loaded_netrwPlugin = 1
 
 -- optionally enable 24-bit colour
 vim.opt.termguicolors = true
+require("nvim-treesitter.configs").setup({
+    ensure_installed = { "python", "lua", "javascript", "html", "css" },
+    highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+    },
+    indent = {
+        enable = true,
+    },
+})
 require("nvim-tree").setup({
-  sort = {
-    sorter = "case_sensitive",
-  },
-  view = {
-    width = 50,
-  },
-  renderer = {
-    group_empty = true,
-  },
-  filters = {
-    dotfiles = true,
-  },
+    update_focused_file = {
+        enable = true,
+        update_cwd = true,
+    },
+    sort = {
+        sorter = "case_sensitive",
+    },
+    view = {
+        width = 50,
+    },
+    renderer = {
+        group_empty = true,
+    },
+    filters = {
+        dotfiles = true,
+    },
 })
 require("lualine").setup()
 require('telescope').setup({
@@ -90,6 +110,7 @@ require('telescope').setup({
   },
 })
 require("noice").setup()
+require("mason").setup()
 require("tint").setup({
   tint = -30,
   saturation = 0.6,  
@@ -107,18 +128,32 @@ require('barbar').setup({
     tabpages = true,
     sidebar_filetypes = {
         NvimTree = true,
+        dapui_watches = true,
     },
 })
-require("mason").setup()
-require("mason-lspconfig").setup{
-    ensure_installed = { "pyright" },
-}
+require("osc52").setup({
+    silent = false,
+    trim = false,
+})
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+  callback = function()
+    if vim.v.event.operator == 'y' and vim.v.event.regname == '+' then
+      require('osc52').copy_register('+')
+    end
+  end,
+})
 
 local lspconfig = require("lspconfig")
 lspconfig.pyright.setup({
+    root_dir = function(fname)
+        local project_root = require("lspconfig.util").find_git_ancestor(fname)
+        return project_root or vim.fn.expand("~/isaaclab")
+    end,
+    cmd = { "/isaac-sim/pyright_with_env.sh", "--stdio" },
     settings = {
         python = {
-            pythonPath = "/isaac-sim/python.sh"
+            pythonPath = "/isaac-sim/kit/python/bin/python3"
         }
     }   
 })
@@ -139,6 +174,7 @@ cmp.setup({
   },
 })
 
+
 local null_ls = require("null-ls")
 null_ls.setup({
   sources = {
@@ -146,6 +182,82 @@ null_ls.setup({
     null_ls.builtins.formatting.isort,
   },
 })
+
+local dap = require('dap')
+dap.adapters.python = {
+  type = 'executable',
+  command = '/isaac-sim/python.sh',
+  args = { '-m', 'debugpy.adapter' },
+}
+
+dap.configurations.python = {
+  {
+    type = 'python',
+    request = 'launch',
+    name = 'Launch file',
+    program = '${file}',
+    pythonPath = function()
+      return '/isaac-sim/python.sh'
+    end,
+    cwd = '${workspaceFolder}',
+  },
+}
+
+local dap_python = require('dap-python')
+dap_python.setup('/isaac-sim/python.sh')
+
+vim.keymap.set('n', '<leader>db', ":lua require'dap'.toggle_breakpoint()<CR>")
+vim.keymap.set('n', '<leader>dc', ":lua require'dap'.continue()<CR>")
+vim.keymap.set('n', '<leader>di', ":lua require'dap'.step_into()<CR>")
+vim.keymap.set('n', '<leader>do', ":lua require'dap'.step_over()<CR>")
+vim.keymap.set('n', '<leader>dr', ":lua require'dap'.repl.toggle()<CR>")
+vim.keymap.set('n', '<leader>du', ":lua require'dapui'.toggle()<CR>")
+
+require("dapui").setup(
+{
+  icons = { expanded = "▾", collapsed = "▸" },
+  mappings = {
+    expand = { "<CR>", "<2-LeftMouse>" },
+    open = "o",
+    remove = "d",
+    edit = "e",
+    repl = "r",
+  },
+  layouts = {
+    {
+      elements = {
+        { id = "scopes", size = 0.25 },
+        { id = "breakpoints", size = 0.25 },
+        { id = "stacks", size = 0.25 },
+        { id = "watches", size = 0.25 },
+      },
+      size = 40,
+      position = "left",
+    },
+    {
+      elements = {
+        { id = "repl", size = 1 },
+      },
+      size = 10,
+      position = "bottom",
+    },
+  },
+})
+
+vim.fn.sign_define('DapBreakpoint', { text='●', texthl='Error', linehl='', numhl='' })
+
+local dap, dapui = require("dap"), require("dapui")
+dap.listeners.after.event_initialized["dapui_config"] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+  dapui.close()
+end
+
+
 
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
 vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
@@ -200,9 +312,6 @@ map('n', '<Space>bl', '<Cmd>BufferOrderByLanguage<CR>', opts)
 map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
 vim.keymap.set('n', '<C-p>', ":Telescope find_files<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-b>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
-
-
-
 EOF
 
 
