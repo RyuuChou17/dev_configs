@@ -37,6 +37,16 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'sphamba/smear-cursor.nvim'
     Plug 'romgrk/barbar.nvim'
     Plug 'tpope/vim-fugitive'
+    Plug 'neovim/nvim-lspconfig'
+    Plug 'williamboman/mason.nvim'
+    Plug 'williamboman/mason-lspconfig.nvim'
+    Plug 'hrsh7th/nvim-cmp'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/cmp-buffer'
+    Plug 'hrsh7th/cmp-path'
+    Plug 'L3MON4D3/LuaSnip'
+    Plug 'jose-elias-alvarez/null-ls.nvim'
+    Plug 'nvim-lua/plenary.nvim'
 
 call plug#end()
 
@@ -81,6 +91,43 @@ require('barbar').setup({
         NvimTree = true,
     },
 })
+require("mason").setup()
+require("mason-lspconfig").setup{
+    ensure_installed = { "pyright" },
+}
+
+local lspconfig = require("lspconfig")
+lspconfig.pyright.setup {}
+
+local cmp = require("cmp")
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    ['<Tab>'] = cmp.mapping.select_next_item(),
+    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+  }),
+  sources = {
+    { name = "nvim_lsp" },
+    { name = "buffer" },
+    { name = "path" },
+  },
+})
+
+local null_ls = require("null-ls")
+null_ls.setup({
+  sources = {
+    null_ls.builtins.formatting.black,
+    null_ls.builtins.formatting.isort,
+    null_ls.builtins.diagnostics.flake8,  -- 可选
+  },
+})
+
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
+vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, {})
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
+vim.keymap.set("n", "gr", vim.lsp.buf.references, {})
+
 
 local map = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
