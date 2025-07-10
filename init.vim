@@ -27,7 +27,6 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'nvim-telescope/telescope.nvim' 
     Plug 'nvim-treesitter/nvim-treesitter'
     Plug 'nvim-tree/nvim-tree.lua'
-    Plug 'nvim-tree/nvim-web-devicons'
     Plug 'folke/tokyonight.nvim'
     Plug 'nvim-lualine/lualine.nvim'
     Plug 'nvim-tree/nvim-web-devicons'
@@ -54,6 +53,9 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'nvim-telescope/telescope-dap.nvim'           
     Plug 'theHamsta/nvim-dap-virtual-text'            
     Plug 'mfussenegger/nvim-dap-python'
+    Plug 'folke/which-key.nvim'
+    Plug 'rmagatti/auto-session'
+    Plug 'rmagatti/session-lens'
 
 call plug#end()
 
@@ -92,7 +94,24 @@ require("nvim-tree").setup({
         dotfiles = true,
     },
 })
-require("lualine").setup()
+require("lualine").setup({
+  sections = {
+    lualine_a = { 'mode' },
+    lualine_b = { 'branch', 'diff', 'diagnostics' },
+    lualine_c = {  
+        {
+            function()
+                return vim.fn.expand('%:~:.')
+            end,
+            color = { gui = 'bold' },
+        }
+    }, 
+
+    lualine_x = { 'encoding', 'fileformat', 'filetype' },
+    lualine_y = { 'progress' },
+    lualine_z = { 'location' }
+  }
+})
 require('telescope').setup({
   defaults = {
     file_ignore_patterns = {
@@ -157,7 +176,7 @@ lspconfig.pyright.setup({
         }
     }   
 })
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, {})
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open Diagnostic Float" })
 
 
 local cmp = require("cmp")
@@ -206,12 +225,17 @@ dap.configurations.python = {
 local dap_python = require('dap-python')
 dap_python.setup('/isaac-sim/python.sh')
 
-vim.keymap.set('n', '<leader>db', ":lua require'dap'.toggle_breakpoint()<CR>")
-vim.keymap.set('n', '<leader>dc', ":lua require'dap'.continue()<CR>")
-vim.keymap.set('n', '<leader>di', ":lua require'dap'.step_into()<CR>")
-vim.keymap.set('n', '<leader>do', ":lua require'dap'.step_over()<CR>")
-vim.keymap.set('n', '<leader>dr', ":lua require'dap'.repl.toggle()<CR>")
-vim.keymap.set('n', '<leader>du', ":lua require'dapui'.toggle()<CR>")
+vim.keymap.set('n', '<leader>db', ":lua require'dap'.toggle_breakpoint()<CR>", { desc = "Toggle Breakpoint" })
+vim.keymap.set('n', '<leader>dc', ":lua require'dap'.continue()<CR>", { desc = "Continue Debugging" })
+vim.keymap.set('n', '<leader>di', ":lua require'dap'.step_into()<CR>", { desc = "Step Into" })
+vim.keymap.set('n', '<leader>do', ":lua require'dap'.step_over()<CR>", { desc = "Step Over" })
+vim.keymap.set('n', '<leader>dr', ":lua require'dap'.repl.toggle()<CR>", { desc = "Toggle Debug REPL" })
+vim.keymap.set('n', '<leader>du', function()
+  if require("nvim-tree.api").tree.is_visible() then
+    require("nvim-tree.api").tree.close()
+  end
+  require('dapui').toggle()
+end, { desc = "Toggle Debug UI" })
 
 require("dapui").setup(
 {
@@ -259,59 +283,109 @@ end
 
 
 
-vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
-vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
-vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, {})
-vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
-vim.keymap.set("n", "gr", vim.lsp.buf.references, {})
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover Documentation" })
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename Symbol" })
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
+vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Find References" })
+
+-- which-key config
+require("which-key").setup({
+  -- your configuration comes here
+  -- for example, to enable the helix theme
+  plugins = {
+    spelling = {
+      enabled = true,
+      suggestions = 20,
+    },
+  },
+  -- add helix theme
+  preset = "helix",
+})
+
+-- auto-session config
+require("auto-session").setup({
+  log_level = "info",
+  auto_restore_enabled = true,
+  auto_session_enable_last_session = false,
+  auto_session_enabled = true,
+  auto_save_enabled = true,
+  auto_dap_restore = true,
+  auto_project_root_dir = vim.fn.getcwd(),
+  bypass_session_save_file_types = { "gitcommit", "gitrebase" },
+})
+
+-- keymaps for auto-session
+vim.keymap.set("n", "<leader>sr", require("auto-session.session-lens").search_session, {
+  noremap = true,
+  silent = true,
+  desc = "Restore Session",
+})
+vim.keymap.set("n", "<leader>ss", "<cmd>SaveSession<CR>", {
+  noremap = true,
+  silent = true,
+  desc = "Save Session",
+})
+vim.keymap.set("n", "<leader>sd", "<cmd>DeleteSession<CR>", {
+  noremap = true,
+  silent = true,
+  desc = "Delete Session",
+})
+vim.keymap.set("n", "<leader>sl", "<cmd>LoadSession<CR>", {
+  noremap = true,
+  silent = true,
+  desc = "Load Session",
+})
+vim.keymap.set("n", "<leader>sc", "<cmd>CloseSession<CR>", {
+  noremap = true,
+  silent = true,
+  desc = "Close Session",
+})
+
 
 
 local map = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 
--- Move to previous/next
-map('n', '<A-,>', '<Cmd>BufferPrevious<CR>', opts)
-map('n', '<A-.>', '<Cmd>BufferNext<CR>', opts)
+-- Move to previous/next buffer
+map('n', '<A-,>', '<Cmd>BufferPrevious<CR>', { desc = "Previous Buffer", noremap = true, silent = true })
+map('n', '<A-.>', '<Cmd>BufferNext<CR>', { desc = "Next Buffer", noremap = true, silent = true })
 
--- Re-order to previous/next
-map('n', '<A-<>', '<Cmd>BufferMovePrevious<CR>', opts)
-map('n', '<A->>', '<Cmd>BufferMoveNext<CR>', opts)
+-- Re-order buffer to previous/next
+map('n', '<A-<', '<Cmd>BufferMovePrevious<CR>', { desc = "Move Buffer Previous", noremap = true, silent = true })
+map('n', '<A->>', '<Cmd>BufferMoveNext<CR>', { desc = "Move Buffer Next", noremap = true, silent = true })
 
 -- Goto buffer in position...
-map('n', '<A-1>', '<Cmd>BufferGoto 1<CR>', opts)
-map('n', '<A-2>', '<Cmd>BufferGoto 2<CR>', opts)
-map('n', '<A-3>', '<Cmd>BufferGoto 3<CR>', opts)
-map('n', '<A-4>', '<Cmd>BufferGoto 4<CR>', opts)
-map('n', '<A-5>', '<Cmd>BufferGoto 5<CR>', opts)
-map('n', '<A-6>', '<Cmd>BufferGoto 6<CR>', opts)
-map('n', '<A-7>', '<Cmd>BufferGoto 7<CR>', opts)
-map('n', '<A-8>', '<Cmd>BufferGoto 8<CR>', opts)
-map('n', '<A-9>', '<Cmd>BufferGoto 9<CR>', opts)
-map('n', '<A-0>', '<Cmd>BufferLast<CR>', opts)
+map('n', '<A-1>', '<Cmd>BufferGoto 1<CR>', { desc = "Go to Buffer 1", noremap = true, silent = true })
+map('n', '<A-2>', '<Cmd>BufferGoto 2<CR>', { desc = "Go to Buffer 2", noremap = true, silent = true })
+map('n', '<A-3>', '<Cmd>BufferGoto 3<CR>', { desc = "Go to Buffer 3", noremap = true, silent = true })
+map('n', '<A-4>', '<Cmd>BufferGoto 4<CR>', { desc = "Go to Buffer 4", noremap = true, silent = true })
+map('n', '<A-5>', '<Cmd>BufferGoto 5<CR>', { desc = "Go to Buffer 5", noremap = true, silent = true })
+map('n', '<A-6>', '<Cmd>BufferGoto 6<CR>', { desc = "Go to Buffer 6", noremap = true, silent = true })
+map('n', '<A-7>', '<Cmd>BufferGoto 7<CR>', { desc = "Go to Buffer 7", noremap = true, silent = true })
+map('n', '<A-8>', '<Cmd>BufferGoto 8<CR>', { desc = "Go to Buffer 8", noremap = true, silent = true })
+map('n', '<A-9>', '<Cmd>BufferGoto 9<CR>', { desc = "Go to Buffer 9", noremap = true, silent = true })
+map('n', '<A-0>', '<Cmd>BufferLast<CR>', { desc = "Go to Last Buffer", noremap = true, silent = true })
 
 -- Pin/unpin buffer
-map('n', '<A-p>', '<Cmd>BufferPin<CR>', opts)
---                 :BufferGotoPinned
---                 :BufferGotoUnpinned
+map('n', '<A-p>', '<Cmd>BufferPin<CR>', { desc = "Pin/Unpin Buffer", noremap = true, silent = true })
 -- Close buffer
-map('n', '<A-c>', '<Cmd>BufferClose<CR>', opts)
---                 :BufferWipeout
---                 :BufferCloseAllButCurrent
---                 :BufferCloseAllButPinned
---                 :BufferCloseAllButCurrentOrPinned
---                 :BufferCloseBuffersLeft
---                 :BufferCloseBuffersRight
+map('n', '<A-c>', '<Cmd>BufferClose<CR>', { desc = "Close Buffer", noremap = true, silent = true })
 
-map('n', '<C-A-p>',   '<Cmd>BufferPick<CR>', opts)
-map('n', '<C-s-p>', '<Cmd>BufferPickDelete<CR>', opts)
 
-map('n', '<Space>bb', '<Cmd>BufferOrderByBufferNumber<CR>', opts)
-map('n', '<Space>bn', '<Cmd>BufferOrderByName<CR>', opts)
-map('n', '<Space>bd', '<Cmd>BufferOrderByDirectory<CR>', opts)
-map('n', '<Space>bl', '<Cmd>BufferOrderByLanguage<CR>', opts)
-map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
-vim.keymap.set('n', '<C-p>', ":Telescope find_files<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-b>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
+map('n', '<C-s-p>', '<Cmd>BufferPickDelete<CR>', { desc = "Pick and Delete Buffer", noremap = true, silent = true })
+vim.keymap.set('n', '<leader>f', '<Cmd>BufferPick<CR>', { desc = "Pick Buffer", noremap = true, silent = true })
+
+map('n', '<Space>bb', '<Cmd>BufferOrderByBufferNumber<CR>', { desc = "Order Buffers by Number", noremap = true, silent = true })
+map('n', '<Space>bn', '<Cmd>BufferOrderByName<CR>', { desc = "Order Buffers by Name", noremap = true, silent = true })
+map('n', '<Space>bd', '<Cmd>BufferOrderByDirectory<CR>', { desc = "Order Buffers by Directory", noremap = true, silent = true })
+map('n', '<Space>bl', '<Cmd>BufferOrderByLanguage<CR>', { desc = "Order Buffers by Language", noremap = true, silent = true })
+map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', { desc = "Order Buffers by Window Number", noremap = true, silent = true })
+vim.keymap.set('n', '<C-p>', ":Telescope find_files<CR>", { noremap = true, silent = true, desc = "Find Files (Telescope)" })
+vim.keymap.set("n", "<C-b>", function()
+  pcall(function() require("dapui").close() end)
+  vim.cmd("NvimTreeToggle")
+end, { noremap = true, silent = true, desc = "Toggle NvimTree" })
 EOF
 
 
