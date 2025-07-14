@@ -56,6 +56,7 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'folke/which-key.nvim'
     Plug 'rmagatti/auto-session'
     Plug 'rmagatti/session-lens'
+    Plug 'akinsho/toggleterm.nvim', {'tag' : '*'}
 
 call plug#end()
 
@@ -386,6 +387,17 @@ vim.keymap.set("n", "<C-b>", function()
   pcall(function() require("dapui").close() end)
   vim.cmd("NvimTreeToggle")
 end, { noremap = true, silent = true, desc = "Toggle NvimTree" })
+
+map('n', '<A-s>', '<Cmd>wa<CR>', { desc = "Save All Buffers", noremap = true, silent = true })
+
+require("toggleterm").setup{
+    size = 15,
+    shell = "/usr/bin/zsh",
+    open_mapping = [[<c-\>]],
+    direction = 'float', 
+}
+
+
 EOF
 
 
