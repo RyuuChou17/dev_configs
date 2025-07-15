@@ -9,6 +9,7 @@ set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set expandtab
+set smartindent
 
 " Don't write backup file if vim is being called by "crontab -e"
 au BufWrite /private/tmp/crontab.* set nowritebackup nobackup
@@ -59,6 +60,8 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'akinsho/toggleterm.nvim', {'tag' : '*'}
 
 call plug#end()
+
+colorscheme tokyonight
 
 lua << EOF
 vim.g.mapleader = " "
@@ -397,8 +400,15 @@ require("toggleterm").setup{
     direction = 'float', 
 }
 
+function LineNumberColors()
+    vim.api.nvim_set_hl(0, 'LineNrAbove', { fg='#7aa2f7', bold=false })
+    vim.api.nvim_set_hl(0, 'LineNr', { fg='white', bold=true })
+    vim.api.nvim_set_hl(0, 'LineNrBelow', { fg='#f7768e', bold=false })
+end
+
+LineNumberColors()
+
 
 EOF
 
 
-colorscheme tokyonight
