@@ -58,6 +58,7 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'rmagatti/auto-session'
     Plug 'rmagatti/session-lens'
     Plug 'akinsho/toggleterm.nvim', {'tag' : '*'}
+    Plug 'RRethy/vim-illuminate'
 
 call plug#end()
 
@@ -79,7 +80,7 @@ require("nvim-treesitter.configs").setup({
     indent = {
         enable = true,
     },
-})
+    })
 require("nvim-tree").setup({
     update_focused_file = {
         enable = true,
@@ -240,6 +241,38 @@ vim.keymap.set('n', '<leader>du', function()
   end
   require('dapui').toggle()
 end, { desc = "Toggle Debug UI" })
+
+vim.keymap.set('n', '<leader>dt', ":lua require'dap'.terminate()<CR>", { desc = "Terminate Debug Session" })
+
+require('illuminate').configure({
+    providers = {
+        'lsp',
+        'treesitter',
+        'regex',
+    },
+    delay = 120,  
+    large_file_cutoff = 2000,
+    large_file_overrides = {
+        providers = { 'regex' },
+    },
+    filetypes_denylist = {
+        'dirbuf',
+        'dirvish',
+        'fugitive',
+        'NvimTree',
+        'neo-tree',
+        'dashboard',
+        'alpha',
+        'toggleterm',
+        'TelescopePrompt',
+        'Trouble',
+        'Outline',
+    },
+    under_cursor = true,
+    min_count_to_highlight = 2,
+    disable_keymaps = true,
+})
+
 
 require("dapui").setup(
 {
