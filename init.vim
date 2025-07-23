@@ -59,6 +59,10 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'rmagatti/session-lens'
     Plug 'akinsho/toggleterm.nvim', {'tag' : '*'}
     Plug 'RRethy/vim-illuminate'
+    Plug 'tamton-aquib/duck.nvim'
+    Plug 'numToStr/Comment.nvim'
+    Plug 'ggandor/leap.nvim'
+    Plug 'lervag/vimtex'
 
 call plug#end()
 
@@ -109,10 +113,20 @@ require("lualine").setup({
                 return vim.fn.expand('%:~:.')
             end,
             color = { gui = 'bold' },
-        }
+        },
     }, 
 
-    lualine_x = { 'encoding', 'fileformat', 'filetype' },
+    lualine_x = {
+        {
+          function()
+            local utc = os.time(os.date("!*t"))
+            local jst = utc + 9 * 3600           
+            return os.date("%H:%M:%S", jst)
+          end,
+          icon = '',
+        },
+        { 'encoding', 'fileformat', 'filetype' }
+    },
     lualine_y = { 'progress' },
     lualine_z = { 'location' }
   }
@@ -195,6 +209,7 @@ cmp.setup({
     { name = "nvim_lsp" },
     { name = "buffer" },
     { name = "path" },
+    { name = "vimtex" }
   },
 })
 
@@ -224,6 +239,9 @@ dap.configurations.python = {
       return '/isaac-sim/python.sh'
     end,
     cwd = '${workspaceFolder}',
+    env = {
+        CUDA_VISIBLE_DEVICES = '1',
+    }
   },
 }
 
@@ -425,6 +443,7 @@ vim.keymap.set("n", "<C-b>", function()
 end, { noremap = true, silent = true, desc = "Toggle NvimTree" })
 
 map('n', '<A-s>', '<Cmd>wa<CR>', { desc = "Save All Buffers", noremap = true, silent = true })
+map('i', '<S-Tab>', '<C-d>', { desc = "Indent Line", noremap = true, silent = true })
 
 require("toggleterm").setup{
     size = 15,
@@ -441,6 +460,46 @@ end
 
 LineNumberColors()
 
+-- vim.api.nvim_create_autocmd("VimEnter", {
+--     callback = function()
+--         require("duck").hatch("🐈")
+--     end,
+-- })
+
+
+map('n', '<C-d>', "15jzz", { desc = "Scroll Down 10 Lines", noremap = true, silent = true })
+map('n', '<C-u>', "15kzz", { desc = "Scroll Up 10 Lines", noremap = true, silent = true })
+
+-- comment
+require('Comment').setup()
+
+map('n', '<C-/>', '<Plug>(comment_toggle_linewise_current)', { desc = "Toggle Comment", noremap = true, silent = true })
+map('v', '<C-/>', '<Plug>(comment_toggle_linewise_visual)', { desc = "Toggle Comment", noremap = true, silent = true })
+
+-- leap.nvim
+require('leap').add_default_mappings()
+
+-- vimtex configuration
+vim.g.vimtex_view_method = 'zathura'
+
+vim.g.vimtex_compiler_latexmk = {
+    build_dir = 'build',
+    callback = 1,
+    continuous = 1,
+    options = {
+        '-pdf',
+        '-shell-escape',
+        '-verbose',
+        '-file-line-error',
+        '-synctex=1',
+    },
+}
+
+vim.g.tex_conceal = 'abdmg'
+
+map('n', '<leader>ll', ':VimtexCompile<CR>', { desc = "Compile LaTeX", noremap = true, silent = true })
+map('n', '<leader>lv', ':VimtexView<CR>', { desc = "View LaTeX", noremap = true, silent = true })
+map('n', '<leader>lc', ':VimtexClean<CR>', { desc = "Clean LaTeX", noremap = true, silent = true })
 
 EOF
 
