@@ -10,6 +10,7 @@ set shiftwidth=4
 set softtabstop=4
 set expandtab
 set smartindent
+set encoding=utf-8
 
 " Don't write backup file if vim is being called by "crontab -e"
 au BufWrite /private/tmp/crontab.* set nowritebackup nobackup
@@ -100,7 +101,8 @@ require("nvim-tree").setup({
         group_empty = true,
     },
     filters = {
-        dotfiles = true,
+        dotfiles = false,
+        git_ignored = false,
     },
 })
 require("lualine").setup({
@@ -481,15 +483,12 @@ require('leap').add_default_mappings()
 
 -- vimtex configuration
 vim.g.vimtex_view_method = 'zathura'
-
 vim.g.vimtex_compiler_latexmk = {
     build_dir = 'build',
     callback = 1,
-    continuous = 0,
-    executable = 'latexmk',
+    continuous = 1,
     options = {
-        'xelatex',
-        '-pdf',
+        '-xelatex',
         '-shell-escape',
         '-verbose',
         '-file-line-error',
