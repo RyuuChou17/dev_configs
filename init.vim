@@ -449,7 +449,7 @@ map('i', '<S-Tab>', '<C-d>', { desc = "Indent Line", noremap = true, silent = tr
 
 require("toggleterm").setup{
     size = 15,
-    shell = "/usr/bin/zsh",
+    shell = "/bin/zsh",
     open_mapping = [[<c-\>]],
     direction = 'float', 
 }
@@ -482,16 +482,22 @@ map('v', '<C-/>', '<Plug>(comment_toggle_linewise_visual)', { desc = "Toggle Com
 require('leap').add_default_mappings()
 
 -- vimtex configuration
-vim.g.vimtex_view_method = 'zathura'
+vim.g.vimtex_view_method = 'skim'
+vim.g.vimtex_view_skim_sync = 1
+vim.g.vimtex_view_skim_activate = 1
+
+vim.g.vimtex_compiler_method = 'latexmk'
 vim.g.vimtex_compiler_latexmk = {
-    build_dir = 'build',
+    backend = 'nvim',
     callback = 1,
     continuous = 1,
+    executable = 'latexmk',
     options = {
-        '-xelatex',
+        '-pdf',
         '-shell-escape',
         '-verbose',
         '-file-line-error',
+        '-interaction=nonstopmode',
         '-synctex=1',
     },
 }
@@ -501,6 +507,8 @@ vim.g.tex_conceal = 'abdmg'
 map('n', '<leader>ll', ':VimtexCompile<CR>', { desc = "Compile LaTeX", noremap = true, silent = true })
 map('n', '<leader>lv', ':VimtexView<CR>', { desc = "View LaTeX", noremap = true, silent = true })
 map('n', '<leader>lc', ':VimtexClean<CR>', { desc = "Clean LaTeX", noremap = true, silent = true })
+map('n', '<leader>le', ':VimtexCompile<CR>:VimtexView<CR>', { desc = "Compile & View", noremap = true, silent = true })
+
 
 EOF
 
