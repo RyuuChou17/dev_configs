@@ -64,6 +64,7 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'numToStr/Comment.nvim'
     Plug 'ggandor/leap.nvim'
     Plug 'lervag/vimtex'
+    Plug 's1n7ax/nvim-window-picker',
 
 call plug#end()
 
@@ -501,6 +502,27 @@ vim.g.tex_conceal = 'abdmg'
 map('n', '<leader>ll', ':VimtexCompile<CR>', { desc = "Compile LaTeX", noremap = true, silent = true })
 map('n', '<leader>lv', ':VimtexView<CR>', { desc = "View LaTeX", noremap = true, silent = true })
 map('n', '<leader>lc', ':VimtexClean<CR>', { desc = "Clean LaTeX", noremap = true, silent = true })
+
+-- vim-window-picker configuration
+require('window-picker').setup({
+    hint = 'floating-big-letter',
+    autoselect_one = true,
+    include_current = false,
+    selection_chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    filter_rules = {
+        bo = {
+            filetype = { 'NvimTree', 'TelescopePrompt', 'toggleterm', 'dapui_watches' },
+            buftype = { 'terminal', 'quickfix' },
+        },
+    },
+    other_win_hl_color = '#e35e4f',
+})
+vim.keymap.set('n', '<leader>w', function()
+  local picked_window_id = require('window-picker').pick_window()
+  if picked_window_id then
+    vim.api.nvim_set_current_win(picked_window_id)
+  end
+end, { desc = 'Pick a window' })
 
 EOF
 
