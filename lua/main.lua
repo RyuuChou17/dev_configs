@@ -433,7 +433,7 @@ vim.keymap.set('n', '<leader>ll', ':VimtexCompile<CR>', { desc = "Compile LaTeX"
 vim.keymap.set('n', '<leader>lv', ':VimtexView<CR>', { desc = "View LaTeX", noremap = true, silent = true })
 vim.keymap.set('n', '<leader>lc', ':VimtexClean<CR>', { desc = "Clean LaTeX", noremap = true, silent = true })
 vim.keymap.set('n', '<leader>le', ':VimtexCompile<CR>:VimtexView<CR>', { desc = "Compile & View", noremap = true, silent = true })
-vim.keymap.set('v', '<leader>y', '"+y", { desc = "Yank to Clipboard", noremap = true, silent = true })
+vim.keymap.set('v', '<leader>y', '"+y', { desc = "Yank to Clipboard", noremap = true, silent = true })
 
 
 -- vim-window-picker configuration
