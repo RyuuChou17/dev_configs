@@ -65,6 +65,8 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'ggandor/leap.nvim'
     Plug 'lervag/vimtex'
     Plug 's1n7ax/nvim-window-picker',
+    Plug 'nvim-treesitter/nvim-treesitter-context',
+    Plug 'stevearc/aerial.nvim',
 
 call plug#end()
 

@@ -456,3 +456,31 @@ vim.keymap.set('n', '<leader>w', function()
     vim.api.nvim_set_current_win(picked_window_id)
   end
 end, { desc = 'Pick a window' })
+
+-- vim treesitter context
+require('treesitter-context').setup({
+    enable = true,
+    max_lines = 3, -- 0 means no limit
+    trim_scope = 'outer', -- 'inner' or 'outer'
+    min_window_height = 0, -- set to 0 if you want to disable the plugin when the window height is less than this value
+    mode = 'cursor', -- 'cursor' or 'topline'
+    zindex = 20, -- set to a value higher than the current window's zindex
+})
+
+-- aerial.nvim configuration
+require('aerial').setup({
+    backends = { 'treesitter', 'lsp' },
+    show_guides = true,
+    show_guide_icons = true,
+    show_cursor = true,
+    close_on_select = true,
+    attach_mode = 'global',
+    layout = {
+        default_direction = 'float',
+        min_width = 30,
+        max_width = 60,
+        width = 40,
+        preserve_equality = true,
+    },
+})
+vim.keymap.set('n', '<leader>a', ':AerialToggle<CR>', { desc = "Toggle Aerial", noremap = true, silent = true })
