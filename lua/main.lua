@@ -127,6 +127,27 @@ lspconfig.pyright.setup({
 })
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open Diagnostic Float" })
 
+lspconfig.texlab.setup({
+    root_dir = function(fname)
+        return lspconfig.util.root_pattern("texlab.json", ".git")(fname) or vim.fn.getcwd()
+    end,
+    cmd = { "texlab" },
+    filetypes = { "tex", "bib" },
+    settings = {
+        texlab = {
+            build = {
+                executable = "latexmk",
+                args = { "-pdflatex", "-interaction=nonstopmode", "-synctex=1", "%f" },
+                onSave = false,
+            },
+            forwardSearch = {
+                executable = "open",
+                args = { "-a", "Skim", "%p" },
+            },
+        },
+    },
+})
+
 
 local cmp = require("cmp")
 cmp.setup({
@@ -410,6 +431,7 @@ require('leap').add_default_mappings()
 vim.g.vimtex_view_method = 'skim'
 vim.g.vimtex_view_skim_sync = 1
 vim.g.vimtex_view_skim_activate = 1
+vim.g.vimtex_view_automatic = 1
 
 vim.g.vimtex_compiler_method = 'latexmk'
 vim.g.vimtex_compiler_latexmk = {
