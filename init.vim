@@ -71,5 +71,3 @@ call plug#end()
 colorscheme tokyonight
 
 lua require("main")
-
-

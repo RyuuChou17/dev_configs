@@ -418,7 +418,7 @@ vim.g.vimtex_compiler_latexmk = {
     continuous = 1,
     executable = 'latexmk',
     options = {
-        '-pdf',
+        '-pdflatex',
         '-shell-escape',
         '-verbose',
         '-file-line-error',
