@@ -67,6 +67,8 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 's1n7ax/nvim-window-picker',
     Plug 'nvim-treesitter/nvim-treesitter-context',
     Plug 'stevearc/aerial.nvim',
+    Plug 'folke/flash.nvim'
+    Plug 'phaazon/hop.nvim',
 
 call plug#end()
 

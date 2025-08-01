@@ -321,37 +321,6 @@ require("auto-session").setup({
   bypass_session_save_file_types = { "gitcommit", "gitrebase" },
 })
 
--- keymaps for auto-session
-vim.keymap.set("n", "<leader>sr", require("auto-session.session-lens").search_session, {
-  noremap = true,
-  silent = true,
-  desc = "Restore Session",
-})
-vim.keymap.set("n", "<leader>ss", "<cmd>SaveSession<CR>", {
-  noremap = true,
-  silent = true,
-  desc = "Save Session",
-})
-vim.keymap.set("n", "<leader>sd", "<cmd>DeleteSession<CR>", {
-  noremap = true,
-  silent = true,
-  desc = "Delete Session",
-})
-vim.keymap.set("n", "<leader>sl", "<cmd>LoadSession<CR>", {
-  noremap = true,
-  silent = true,
-  desc = "Load Session",
-})
-vim.keymap.set("n", "<leader>sc", "<cmd>CloseSession<CR>", {
-  noremap = true,
-  silent = true,
-  desc = "Close Session",
-})
-
-
-
-
-
 -- Move to previous/next buffer
 vim.keymap.set('n', '<A-,>', '<Cmd>BufferPrevious<CR>', { desc = "Previous Buffer", noremap = true, silent = true })
 vim.keymap.set('n', '<A-.>', '<Cmd>BufferNext<CR>', { desc = "Next Buffer", noremap = true, silent = true })
@@ -424,8 +393,20 @@ require('Comment').setup()
 vim.keymap.set('n', '<C-/>', '<Plug>(comment_toggle_linewise_current)', { desc = "Toggle Comment", noremap = true, silent = true })
 vim.keymap.set('v', '<C-/>', '<Plug>(comment_toggle_linewise_visual)', { desc = "Toggle Comment", noremap = true, silent = true })
 
--- leap.nvim
-require('leap').add_default_mappings()
+-- leap.nvim and flash.nvim configuration
+-- require('leap').add_default_mappings()
+require('flash').setup()
+vim.keymap.set({ "n", "x", "o" }, "s", function() require("flash").jump() end, { desc = "Flash", noremap = true, silent = true})
+vim.keymap.set({ "n", "x", "o" }, "S", function() require("flash").treesitter() end, { desc = "Treesitter", noremap = true, silent = true })
+vim.keymap.set("o", "r", function() require("flash").remote() end, { desc = "Remote Flash", noremap = true, silent = true })
+vim.keymap.set({ "o", "x" }, "R", function() require("flash").treesitter_search() end, { desc = "Treesitter Search", noremap = true, silent = true})
+vim.keymap.set("c", "<C-s>", function() require("flash").toggle() end, { desc = "Toggle Flash Search", noremap = true, silent = true })
+
+-- hop.nvim
+require('hop').setup()
+vim.keymap.set({"n", "x", "o"}, "<leader>j", function()
+    require('hop').hint_lines()
+end, { desc = "Hop to Line", noremap = true, silent = true })
 
 -- vimtex configuration
 vim.g.vimtex_view_method = 'skim'
@@ -482,8 +463,8 @@ end, { desc = 'Pick a window' })
 -- vim treesitter context
 require('treesitter-context').setup({
     enable = true,
-    max_lines = 3, -- 0 means no limit
-    trim_scope = 'outer', -- 'inner' or 'outer'
+    max_lines = 5, -- 0 means no limit
+    trim_scope = 'inner', -- 'inner' or 'outer'
     min_window_height = 0, -- set to 0 if you want to disable the plugin when the window height is less than this value
     mode = 'cursor', -- 'cursor' or 'topline'
     zindex = 20, -- set to a value higher than the current window's zindex
