@@ -77,6 +77,7 @@ require('telescope').setup({
     },
   },
 })
+require('telescope').load_extension('luasnip')
 require("noice").setup()
 require("mason").setup()
 require("tint").setup({
@@ -187,7 +188,15 @@ cmp.setup({
     },
 })
 
-require("luasnip-latex-snippets").setup()
+-- coplilot setup
+vim.g.copilot_no_tab_map = true
+vim.api.nvim_set_keymap("i", "<C-l>", 'copilot#Accept("<CR>")', { expr = true, silent = true, noremap = true, desc = "Accept Copilot Suggestion" })
+
+require("luasnip-latex-snippets").setup({
+    use_treesitter = true,
+    use_ultisnips = true,
+    use_latex_symbols = true,
+})
 require("luasnip").config.setup { enable_autosnippets = true }
 
 local null_ls = require("null-ls")
@@ -379,6 +388,7 @@ vim.keymap.set('n', '<Space>bd', '<Cmd>BufferOrderByDirectory<CR>', { desc = "Or
 vim.keymap.set('n', '<Space>bl', '<Cmd>BufferOrderByLanguage<CR>', { desc = "Order Buffers by Language", noremap = true, silent = true })
 vim.keymap.set('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', { desc = "Order Buffers by Window Number", noremap = true, silent = true })
 vim.keymap.set('n', '<C-p>', ":Telescope find_files<CR>", { noremap = true, silent = true, desc = "Find Files (Telescope)" })
+vim.keymap.set('n', '<C-[>', ":Telescope luasnip<CR>", { noremap = true, silent = true, desc = "Find Snippets (Telescope)" })
 vim.keymap.set("n", "<C-b>", function()
   pcall(function() require("dapui").close() end)
   vim.cmd("NvimTreeToggle")
@@ -512,3 +522,14 @@ require('aerial').setup({
     },
 })
 vim.keymap.set('n', '<leader>a', ':AerialToggle<CR>', { desc = "Toggle Aerial", noremap = true, silent = true })
+
+-- autopairs configuration
+require('nvim-autopairs').setup({
+    check_ts = true,
+    ts_config = {
+        lua = { 'string' },
+        javascript = { 'template_string' },
+        java = false,
+    },
+    disable_filetype = { 'TelescopePrompt', 'vim' },
+})

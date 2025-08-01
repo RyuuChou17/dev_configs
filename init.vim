@@ -71,6 +71,8 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'stevearc/aerial.nvim',
     Plug 'folke/flash.nvim'
     Plug 'phaazon/hop.nvim',
+    Plug 'benfowler/telescope-luasnip.nvim'
+    Plug 'windwp/nvim-autopairs'
 
 call plug#end()
 
