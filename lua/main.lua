@@ -496,18 +496,23 @@ vim.keymap.set('n', '<leader>a', ':AerialToggle<CR>', { desc = "Toggle Aerial", 
 
 -- luasnip configuration
 local luasnip = require("luasnip")
+-- Snippets --------------------------------------------------------------
+-- Disable automatic snippet expansion so triggers like `beg` don't fire
+-- immediately. This lets snippets be expanded manually (e.g. with <Tab>).
+local luasnip = require("luasnip")
+luasnip.config.setup({
+    enable_autosnippets = false,
+})
+
 require("luasnip-latex-snippets").setup({
     allow_on_markdown = true,  -- Allow snippets in markdown files
 })
-require("luasnip").config.set_config({
-    enable_autosnippets = false,
-})
+
 -- Load VSCode-style snippets from vim-snippets
 require("luasnip.loaders.from_snipmate").lazy_load()
 require("luasnip.loaders.from_vscode").lazy_load()
 -- Load custom snippets
 require("luasnip.loaders.from_lua").lazy_load({paths = "~/.config/nvim/snippets"})
-local luasnip = require("luasnip")
 
 -- Tab: expand or jump
 vim.keymap.set("i", "<Tab>", function()
