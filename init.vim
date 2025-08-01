@@ -69,6 +69,8 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'stevearc/aerial.nvim',
     Plug 'folke/flash.nvim'
     Plug 'phaazon/hop.nvim',
+    Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'} 
+    Plug 'iurimateus/luasnip-latex-snippets.nvim'
 
 call plug#end()
 

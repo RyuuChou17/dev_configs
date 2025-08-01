@@ -151,17 +151,23 @@ lspconfig.texlab.setup({
 
 local cmp = require("cmp")
 cmp.setup({
-  mapping = cmp.mapping.preset.insert({
-    ['<Tab>'] = cmp.mapping.select_next_item(),
-    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
-  }),
-  sources = {
-    { name = "nvim_lsp" },
-    { name = "buffer" },
-    { name = "path" },
-    { name = "vimtex" }
-  },
+    snippet = {
+        expand = function(args)
+        require("luasnip").lsp_expand(args.body) -- For luasnip users.
+        end,
+    },
+    mapping = cmp.mapping.preset.insert({
+        ['<Tab>'] = cmp.mapping.select_next_item(),
+        ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    }),
+    sources = {
+        { name = "nvim_lsp" },
+        { name = "buffer" },
+        { name = "path" },
+        { name = "vimtex" },
+        { name = "luasnip" },
+    },
 })
 
 
@@ -487,3 +493,53 @@ require('aerial').setup({
     },
 })
 vim.keymap.set('n', '<leader>a', ':AerialToggle<CR>', { desc = "Toggle Aerial", noremap = true, silent = true })
+
+-- luasnip configuration
+local luasnip = require("luasnip")
+require("luasnip-latex-snippets").setup({
+    allow_on_markdown = true,  -- Allow snippets in markdown files
+})
+require("luasnip").config.set_config({
+    enable_autosnippets = false,
+})
+-- Load VSCode-style snippets from vim-snippets
+require("luasnip.loaders.from_snipmate").lazy_load()
+require("luasnip.loaders.from_vscode").lazy_load()
+-- Load custom snippets
+require("luasnip.loaders.from_lua").lazy_load({paths = "~/.config/nvim/snippets"})
+local luasnip = require("luasnip")
+
+-- Tab: expand or jump
+vim.keymap.set("i", "<Tab>", function()
+  if luasnip.expand_or_jumpable() then
+    return "<Plug>luasnip-expand-or-jump"
+  else
+    return "<Tab>"
+  end
+end, { expr = true, silent = true })
+
+vim.keymap.set("s", "<Tab>", function()
+  if luasnip.jumpable(1) then
+    return "<Plug>luasnip-jump-next"
+  else
+    return "<Tab>"
+  end
+end, { expr = true, silent = true })
+
+-- Shift-Tab: jump backwards
+vim.keymap.set("i", "<S-Tab>", function()
+  if luasnip.jumpable(-1) then
+    return "<Plug>luasnip-jump-prev"
+  else
+    return "<S-Tab>"
+  end
+end, { expr = true, silent = true })
+
+vim.keymap.set("s", "<S-Tab>", function()
+  if luasnip.jumpable(-1) then
+    return "<Plug>luasnip-jump-prev"
+  else
+    return "<S-Tab>"
+  end
+end, { expr = true, silent = true })
+
