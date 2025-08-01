@@ -45,6 +45,7 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/cmp-path'
+    Plug 'saadparwaiz1/cmp_luasnip'
     Plug 'L3MON4D3/LuaSnip'
     Plug 'nvimtools/none-ls.nvim'
     Plug 'github/copilot.vim'
@@ -64,6 +65,7 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'numToStr/Comment.nvim'
     Plug 'ggandor/leap.nvim'
     Plug 'lervag/vimtex'
+    Plug 'iurimateus/luasnip-latex-snippets.nvim'
     Plug 's1n7ax/nvim-window-picker',
     Plug 'nvim-treesitter/nvim-treesitter-context',
     Plug 'stevearc/aerial.nvim',
