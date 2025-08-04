@@ -400,7 +400,7 @@ keymap("n", "<Space>bl", "<Cmd>BufferOrderByLanguage<CR>", { desc = "Order Buffe
 keymap("n", "<Space>bw", "<Cmd>BufferOrderByWindowNumber<CR>", { desc = "Order Buffers by Window Number", noremap = true, silent = true })
 
 keymap("n", "<C-p>", ":Telescope find_files<CR>", { noremap = true, silent = true, desc = "Find Files (Telescope)" })
-keymap("n", "<C-[>", ":Telescope luasnip<CR>", { noremap = true, silent = true, desc = "Find Snippets (Telescope)" })
+keymap("n", "<C-0>", ":Telescope luasnip<CR>", { noremap = true, silent = true, desc = "Find Snippets (Telescope)" })
 keymap("n", "<C-b>", function()
     pcall(function()
         require("dapui").close()
