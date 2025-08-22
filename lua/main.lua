@@ -111,6 +111,7 @@ require("barbar").setup({
         dapui_watches = true,
     },
 })
+
 require("osc52").setup({
     silent = false,
     trim = false,
@@ -388,14 +389,14 @@ keymap("n", "<A-8>", "<Cmd>BufferGoto 8<CR>", { desc = "Go to Buffer 8", noremap
 keymap("n", "<A-9>", "<Cmd>BufferGoto 9<CR>", { desc = "Go to Buffer 9", noremap = true, silent = true })
 keymap("n", "<A-0>", "<Cmd>BufferLast<CR>", { desc = "Go to Last Buffer", noremap = true, silent = true })
 
-keymap("n", "<A-p>", "<Cmd>BufferPin<CR>", { desc = "Pin/Unpin Buffer", noremap = true, silent = true })
+keymap("n", "<leader>bp", "<Cmd>BufferPin<CR>", { desc = "Pin/Unpin Buffer", noremap = true, silent = true })
 keymap("n", "<A-c>", "<Cmd>BufferClose<CR>", { desc = "Close Buffer", noremap = true, silent = true })
-keymap("n", "<C-s-p>", "<Cmd>BufferPickDelete<CR>", { desc = "Pick and Delete Buffer", noremap = true, silent = true })
+keymap("n", "<leader>df", "<Cmd>BufferPickDelete<CR>", { desc = "Pick and Delete Buffer", noremap = true, silent = true })
+keymap("n", "<leader>bda", "<Cmd>BufferCloseAllButCurrent<CR>", { desc = "Delete all Buffers but Current", noremap = true, silent = true })
 keymap("n", "<leader>f", "<Cmd>BufferPick<CR>", { desc = "Pick Buffer", noremap = true, silent = true })
 
 keymap("n", "<Space>bb", "<Cmd>BufferOrderByBufferNumber<CR>", { desc = "Order Buffers by Number", noremap = true, silent = true })
 keymap("n", "<Space>bn", "<Cmd>BufferOrderByName<CR>", { desc = "Order Buffers by Name", noremap = true, silent = true })
-keymap("n", "<Space>bd", "<Cmd>BufferOrderByDirectory<CR>", { desc = "Order Buffers by Directory", noremap = true, silent = true })
 keymap("n", "<Space>bl", "<Cmd>BufferOrderByLanguage<CR>", { desc = "Order Buffers by Language", noremap = true, silent = true })
 keymap("n", "<Space>bw", "<Cmd>BufferOrderByWindowNumber<CR>", { desc = "Order Buffers by Window Number", noremap = true, silent = true })
 
