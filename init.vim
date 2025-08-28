@@ -73,6 +73,8 @@ call plug#begin('~/.local/share/nvim/plugged')
     Plug 'phaazon/hop.nvim',
     Plug 'benfowler/telescope-luasnip.nvim'
     Plug 'windwp/nvim-autopairs'
+    Plug 'f3fora/cmp-spell',
+    Plug 'uga-rosa/cmp-dictionary',
 
 call plug#end()
 

@@ -204,8 +204,19 @@ cmp.setup({
         { name = "buffer" },
         { name = "path" },
         { name = "vimtex" },
+        { 
+            name = "spell",
+            option = {      
+                keep_all_entries = false,
+                enable_in_context = function()
+                    return true
+                end,
+            },
+        }
     },
 })
+vim.opt.spell = true
+vim.opt.spelllang = { "en_us" }
 
 -- Copilot
 vim.g.copilot_no_tab_map = true
